@@ -19,7 +19,87 @@ document.addEventListener('DOMContentLoaded', function() {
   if (yearSpan) {
     yearSpan.textContent = new Date().getFullYear();
   }
-  
+  // ===================== TESTIMONIALS SLIDER =====================
+const track = document.getElementById('testimonialsTrack');
+const prevBtn = document.getElementById('prevTestimonial');
+const nextBtn = document.getElementById('nextTestimonial');
+const dotsContainer = document.getElementById('testimonialDots');
+
+if (track && prevBtn && nextBtn && dotsContainer) {
+  const slides = track.children;
+  const slideCount = slides.length;
+  let currentIndex = 0;
+  let autoSlideInterval;
+
+  // Create dots
+  for (let i = 0; i < slideCount; i++) {
+    const dot = document.createElement('div');
+    dot.classList.add('dot');
+    if (i === 0) dot.classList.add('active');
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  const dots = document.querySelectorAll('.dot');
+
+  function updateDots() {
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentIndex);
+    });
+  }
+
+  function goToSlide(index) {
+    currentIndex = index;
+    const slideWidth = slides[0].offsetWidth + 32; // Width + gap
+    track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    updateDots();
+    resetAutoSlide();
+  }
+
+  function nextSlide() {
+    if (currentIndex < slideCount - 1) {
+      currentIndex++;
+    } else {
+      currentIndex = 0;
+    }
+    goToSlide(currentIndex);
+  }
+
+  function prevSlide() {
+    if (currentIndex > 0) {
+      currentIndex--;
+    } else {
+      currentIndex = slideCount - 1;
+    }
+    goToSlide(currentIndex);
+  }
+
+  function startAutoSlide() {
+    autoSlideInterval = setInterval(nextSlide, 5000);
+  }
+
+  function resetAutoSlide() {
+    clearInterval(autoSlideInterval);
+    startAutoSlide();
+  }
+
+  // Event listeners
+  nextBtn.addEventListener('click', nextSlide);
+  prevBtn.addEventListener('click', prevSlide);
+
+  // Pause auto-slide on hover
+  const slider = document.querySelector('.testimonials-slider');
+  slider.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
+  slider.addEventListener('mouseleave', startAutoSlide);
+
+  // Start auto-sliding
+  startAutoSlide();
+
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    goToSlide(currentIndex);
+  });
+}
   // ===================== STATS COUNT-UP ANIMATION =====================
 function animateNumbers() {
   const statNumbers = document.querySelectorAll('.stat-number');
